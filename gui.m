@@ -38,13 +38,17 @@ function update_plot (obj, init = false)
       q_factor = str2double(get(h.q_factor_edit, "string"));
       slope = str2double(get(h.slope_edit, "string"));
       peakGain = str2double(get(h.gain_edit, "string"));
+      
       [b, a] = calc_biquad3(type, fc, fs, q_factor, slope, peakGain);
+      float_str = sprintf("{%1.5f, %1.5f, %1.5f, %1.5f, %1.5f}", a(1), a(2), a(3), b(2), b(3));
+      set(h.a0_edit, "string", float_str);
 
-      set(h.a0_edit, "string", num2str(a(1), 5));
-      set(h.a1_edit, "string", num2str(a(2), 5));
-      set(h.a2_edit, "string", num2str(a(3), 5));
-      set(h.b1_edit, "string", num2str(b(2), 5));
-      set(h.b2_edit, "string", num2str(b(3), 5));
+      a_q14 = to_fixed(a, 14);
+      b_q14 = to_fixed(b, 14);
+      
+      q14_str = sprintf("{%d, %d, %d, %d, %d}", a_q14(1), a_q14(2), a_q14(3), b_q14(2), b_q14(3));
+      set(h.a1_edit, "string", q14_str);
+      
       [h2, w] = freqz(a, b , 4096);
       semilogx(h.ax1, (w/pi)*(fs/2), 20*log10(abs(h2)), "color", "blue");
       set (get (h.ax1, "title"), "string", "Gain (dB)");
@@ -168,7 +172,7 @@ h.calculate_coeff = uicontrol ("style", "pushbutton",
 ## a0
 h.a0_label = uicontrol ("style", "text",
                                 "units", "normalized",
-                                "string", "a0",
+                                "string", "float",
                                 "horizontalalignment", "right",
                                 "position", [0.60 0.35 0.1 0.06]);
 h.a0_edit = uicontrol ("style", "edit",
@@ -179,7 +183,7 @@ h.a0_edit = uicontrol ("style", "edit",
 ## a1
 h.a1_label = uicontrol ("style", "text",
                                 "units", "normalized",
-                                "string", "a1",
+                                "string", "Q1.14",
                                 "horizontalalignment", "right",
                                 "position", [0.60 0.30 0.1 0.06]);
 h.a1_edit = uicontrol ("style", "edit",
@@ -187,39 +191,40 @@ h.a1_edit = uicontrol ("style", "edit",
                                "string", "",
                                 "horizontalalignment", "left",
                                "position", [0.7 0.30 0.22 0.06]);
-## a2
-h.a2_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "a2",
-                                "horizontalalignment", "right",
-                                "position", [0.60 0.25 0.1 0.06]);
-h.a2_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.25 0.22 0.06]);
-## b1
-h.b1_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "b1",
-                                "horizontalalignment", "right",
-                                "position", [0.60 0.20 0.1 0.06]);
-h.b1_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.20 0.22 0.06]);
-## b2
-h.b2_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "b2",
-                                "horizontalalignment", "right",
-                                "position", [0.60 0.15 0.1 0.06]);
-h.b2_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.15 0.22 0.06]);
+#### a2
+##h.a2_label = uicontrol ("style", "text",
+##                                "units", "normalized",
+##                                "string", "a2",
+##                                "horizontalalignment", "right",
+##                                "position", [0.60 0.25 0.1 0.06]);
+##h.a2_edit = uicontrol ("style", "edit",
+##                               "units", "normalized",
+##                               "string", "",
+##                                "horizontalalignment", "left",
+##                               "position", [0.7 0.25 0.22 0.06]);
+#### b1
+##h.b1_label = uicontrol ("style", "text",
+##                                "units", "normalized",
+##                                "string", "b1",
+##                                "horizontalalignment", "right",
+##                                "position", [0.60 0.20 0.1 0.06]);
+##h.b1_edit = uicontrol ("style", "edit",
+##                               "units", "normalized",
+##                               "string", "",
+##                                "horizontalalignment", "left",
+##                               "position", [0.7 0.20 0.22 0.06]);
+#### b2
+##h.b2_label = uicontrol ("style", "text",
+##                                "units", "normalized",
+##                                "string", "b2",
+##                                "horizontalalignment", "right",
+##                                "position", [0.60 0.15 0.1 0.06]);
+##h.b2_edit = uicontrol ("style", "edit",
+##                               "units", "normalized",
+##                               "string", "",
+##                                "horizontalalignment", "left",
+##                               "position", [0.7 0.15 0.22 0.06]);
+
 ## data cursors
 h.dc_checkbox = uicontrol ("style", "checkbox",
                              "units", "normalized",
