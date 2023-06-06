@@ -1,4 +1,5 @@
 # Octave IIR Filter Design Tool
+This is a fork of https://gitlab.com/amazing-geese/octave-iir-filter-design-tool
 
 ## To Run
 
@@ -9,7 +10,7 @@ Simply run the gui.m file in octave everything is handeled within the GUI
 Here is a list of filter types this calculator can generate with what parameters are used. 
 Note: Options do not show/hide based on filter type selection. Use the chart below to determin which parameters are used.
 
-| Filter Type       | Sampleing Frequency (Fs)  | Center Frequenecy (Fc)   | Q Factor | Slope | Gain |
+| Filter Type       | Sampling Frequency (Fs)  | Center Frequenecy (Fc)   | Q Factor | Slope | Gain |
 |-------------------|---------------------------|--------------------------|----------|-------|------|
 | One Pole Lowpass   | Yes                        | Yes                       | No       | No    | No   |
 | One Pole High Pass | Yes                        | Yes                       | No       | No    | No   | 
@@ -32,7 +33,7 @@ Note: Options do not show/hide based on filter type selection. Use the chart bel
 - [ ] Coursors don't disappear from previous plot after replotting new filter.
 
 # Credits
-
+- Original programming by [EGN Goose](https://gitlab.com/engineeredgoose)
 - Calculations for filters other than lowshelf and high shelf were obtained from https://www.earlevel.com/main/2021/09/02/biquad-calculator-v3/
 - Low shelf and high shelf equations obtained from https://webaudio.github.io/Audio-EQ-Cookbook/audio-eq-cookbook.html
 - datacursor code created by Pantxo Diribarne see datacursor.m file.
