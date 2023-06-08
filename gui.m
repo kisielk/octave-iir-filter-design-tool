@@ -45,9 +45,13 @@ function update_plot (obj, init = false)
 
       a_q14 = to_fixed(a, 14);
       b_q14 = to_fixed(b, 14);
-      
       q14_str = sprintf("{%d, %d, %d, %d, %d}", a_q14(1), a_q14(2), a_q14(3), b_q14(2), b_q14(3));
       set(h.a1_edit, "string", q14_str);
+      
+      a_q30 = to_fixed(a, 30);
+      b_q30 = to_fixed(b, 30);
+      q30_str = sprintf("{%d, %d, %d, %d, %d}", a_q30(1), a_q30(2), a_q30(3), b_q30(2), b_q30(3));
+      set(h.a2_edit, "string", q30_str);
       
       [h2, w] = freqz(a, b , 4096);
       semilogx(h.ax1, (w/pi)*(fs/2), 20*log10(abs(h2)), "color", "blue");
@@ -71,77 +75,36 @@ function update_plot (obj, init = false)
 
 endfunction
 
+label_x = 0.63;
+edit_x = 0.7;
 
-## sampling rate set Fs (Hz)
-h.fs_label = uicontrol ("style", "text",
+function [label, edit] = add_editor(title, default_value, y_pos)
+  label = uicontrol ("style", "text",
                                 "units", "normalized",
-                                "string", "Fs (Hz)",
+                                "string", title,
                                 "horizontalalignment", "right",
-                                "position", [0.63 0.895 0.07 0.08]);
+                                "position", [0.71 y_pos 0.07 0.08]);
 
-h.fs_edit = uicontrol ("style", "edit",
+  edit = uicontrol ("style", "edit",
                                "units", "normalized",
-                               "string", "10000",
+                               "string", default_value,
                                 "horizontalalignment", "left",
-                               "position", [0.7 0.90 0.22 0.06]);
+                               "position", [0.8 y_pos 0.18 0.06]);                             
+endfunction
 
-## Cut off frequency Fc(Hz)
-h.fc_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "Fc (Hz)",
-                                "horizontalalignment", "right",
-                                "position", [0.63 0.84 0.07 0.07]);
+[h.fs_label, h.fs_edit] = add_editor("Fs (Hz)", "10000", 0.9);
+[h.fc_label, h.fc_edit] = add_editor("Fc (Hz)", "300", 0.82);
+[h.q_factor_label, h.q_factor_edit] = add_editor("Q", "4.14", 0.74);
+[h.slope_label, h.slope_edit] = add_editor("Slope", "10", 0.66);
+[h.gain_label, h.gain_edit] = add_editor("Gain (db)", "-10", 0.58);
 
-h.fc_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "300",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.84 0.22 0.06]);
-
-## Q factor
-h.q_factor_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "Q Factor",
-                                "horizontalalignment", "right",
-                                "position", [0.63 0.78 0.07 0.06]);
-
-h.q_factor_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "4.14",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.78 0.22 0.06]);
-## Slope
-h.slope_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "Slope",
-                                "horizontalalignment", "right",
-                                "position", [0.63 0.72 0.07 0.06]);
-
-h.slope_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "10",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.72 0.22 0.06]);
-
-## Gain (dB)
-h.gain_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "Gain (dB)",
-                                "horizontalalignment", "right",
-                                "position", [0.60 0.66 0.1 0.06]);
-
-h.gain_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "-10",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.66 0.22 0.06]);
 
 ## filter type select
 h.filter_type_label = uicontrol ("style", "text",
                                "units", "normalized",
                                "string", "Type",
                                "horizontalalignment", "right",
-                               "position", [0.60 0.60 0.1 0.06]);
+                               "position", [0.71 0.50 0.07 0.08]);
 
 h.filter_type_popup = uicontrol ("style", "popupmenu",
                                "units", "normalized",
@@ -160,70 +123,19 @@ h.filter_type_popup = uicontrol ("style", "popupmenu",
                                           "highShelf 1st",
                                           "allpass",
                                           "allpass 1st"},
-                               "position", [0.7 0.60 0.22 0.06]);
+                               "position", [0.8 0.50 0.18 0.06]);
 
 ## Calculate Coefficients
 h.calculate_coeff = uicontrol ("style", "pushbutton",
                                 "units", "normalized",
-                                "string", "Calculate Coefficients",
+                                "string", "Calculate",
                                 "callback", @update_plot,
-                                "position", [0.6 0.45 0.35 0.09]);
+                                "position", [0.8 0.38 0.18 0.09]);
 
-## a0
-h.a0_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "float",
-                                "horizontalalignment", "right",
-                                "position", [0.60 0.35 0.1 0.06]);
-h.a0_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.35 0.22 0.06]);
-## a1
-h.a1_label = uicontrol ("style", "text",
-                                "units", "normalized",
-                                "string", "Q1.14",
-                                "horizontalalignment", "right",
-                                "position", [0.60 0.30 0.1 0.06]);
-h.a1_edit = uicontrol ("style", "edit",
-                               "units", "normalized",
-                               "string", "",
-                                "horizontalalignment", "left",
-                               "position", [0.7 0.30 0.22 0.06]);
-#### a2
-##h.a2_label = uicontrol ("style", "text",
-##                                "units", "normalized",
-##                                "string", "a2",
-##                                "horizontalalignment", "right",
-##                                "position", [0.60 0.25 0.1 0.06]);
-##h.a2_edit = uicontrol ("style", "edit",
-##                               "units", "normalized",
-##                               "string", "",
-##                                "horizontalalignment", "left",
-##                               "position", [0.7 0.25 0.22 0.06]);
-#### b1
-##h.b1_label = uicontrol ("style", "text",
-##                                "units", "normalized",
-##                                "string", "b1",
-##                                "horizontalalignment", "right",
-##                                "position", [0.60 0.20 0.1 0.06]);
-##h.b1_edit = uicontrol ("style", "edit",
-##                               "units", "normalized",
-##                               "string", "",
-##                                "horizontalalignment", "left",
-##                               "position", [0.7 0.20 0.22 0.06]);
-#### b2
-##h.b2_label = uicontrol ("style", "text",
-##                                "units", "normalized",
-##                                "string", "b2",
-##                                "horizontalalignment", "right",
-##                                "position", [0.60 0.15 0.1 0.06]);
-##h.b2_edit = uicontrol ("style", "edit",
-##                               "units", "normalized",
-##                               "string", "",
-##                                "horizontalalignment", "left",
-##                               "position", [0.7 0.15 0.22 0.06]);
+
+[h.a0_label, h.a0_edit] = add_editor("float", "", 0.30);
+[h.a1_label, h.a1_edit] = add_editor("Q1.14", "", 0.22);
+[h.a2_label, h.a2_edit] = add_editor("Q1.30", "", 0.14);
 
 ## data cursors
 h.dc_checkbox = uicontrol ("style", "checkbox",
